@@ -4,6 +4,7 @@
   "description": "Gamer Fun League (GFL) is a fun Overwatch League. Teams can register, find scrims, and enter weekly games.",
   "main": "app.js",
   "scripts": {
+    "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -19,6 +20,10 @@
   "author": "Michael Feist",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }

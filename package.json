@@ -1,0 +1,24 @@
+{
+  "name": "gfl",
+  "version": "1.0.0",
+  "description": "Gamer Fun League (GFL) is a fun Overwatch League. Teams can register, find scrims, and enter weekly games.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gamer",
+    "fun",
+    "league",
+    "GFL",
+    "Overwatch",
+    "OW",
+    "scrim",
+    "tournament"
+  ],
+  "author": "Michael Feist",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

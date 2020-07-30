@@ -1,3 +1,6 @@
+package-lock.json
+nodemon.json
+
 # Logs
 logs
 *.log

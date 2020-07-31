@@ -19,18 +19,21 @@ Explanation:
  - The Latin used A-z and À-ú
  - The Cyrillic alphabet used а-я, А-Я, ё, Ё, and À-ú.
 */
-const BNET_PATTERN = new RegExp(/(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/);
+const BNET_PATTERN = /(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/;
+const BNET_REGEX = new RegExp(BNET_PATTERN);
 
 module.exports.checkValidBnet = (bnet) => {
-    return BNET_PATTERN.test(bnet);
+    return BNET_REGEX.test(bnet);
 };
 
 module.exports.getBnetName = (bnet) => {
-    let results = BNET_PATTERN.exec(bnet);
+    let results = BNET_REGEX.exec(bnet);
     return results[1];
 };
 
 module.exports.getBnetTag = (bnet) => {
-    let results = BNET_PATTERN.exec(bnet);
+    let results = BNET_REGEX.exec(bnet);
     return results[5].substr(1);
 };
+
+module.exports.BNET_PATTERN = BNET_PATTERN;

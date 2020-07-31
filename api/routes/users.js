@@ -3,6 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const errorMessage = require('../responses/default-error');
+const authenticationErrorMessage = require('../responses/authentication-error');
 
 const saltRounds = 10;
 
@@ -18,16 +20,19 @@ router.post('/signup', (req, res, next) => {
         .exec()
         .then(user => {
             if (user.length >= 1) {
-                console.log(user);
-                return res.status(409).json({
-                    message: 'Email already exists'
-                });
+                res.statusCode = 409;
+
+                const response = errorMessage(
+                    409,
+                    'Unable to create user as email already exists'
+                );
+
+                return res.json(response);
             } else {
                 bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
                     if (err) {
-                        return res.status(500).json({
-                            error: err
-                        });
+                        console.log(err);
+                        return res.status(500).json(errorMessage());
                     } else {
                         const user = new User({
                             _id: new mongoose.Types.ObjectId(),
@@ -43,7 +48,7 @@ router.post('/signup', (req, res, next) => {
                             })
                             .catch(err => {
                                 console.log(err);
-                                res.status(500).json({error: err});
+                                res.status(500).json(errorMessage());
                             });
                     }
                 });
@@ -51,7 +56,7 @@ router.post('/signup', (req, res, next) => {
         })
         .catch(err => {
             console.log(err);
-            res.status(500).json({error: err});
+            res.status(500).json(errorMessage());
         });
 });
 
@@ -60,15 +65,11 @@ router.post('/login', (req, res, next) => {
         .exec()
         .then(user => {
             if (user.length < 1) {
-                return res.status(401).json({
-                    message: 'Auth failed'
-                });
+                return res.status(401).json(authenticationErrorMessage());
             } else {
                 bcrypt.compare(req.body.password, user[0].password, (err, result) => {
                     if (err) {
-                        return res.status(401).json({
-                            message: 'Auth failed'
-                        });
+                        return res.status(401).json(authenticationErrorMessage());
                     }
 
                     if (result) {
@@ -86,16 +87,14 @@ router.post('/login', (req, res, next) => {
                             token: token
                         });
                     } else {
-                        return res.status(401).json({
-                            message: 'Auth failed'
-                        });
+                        return res.status(401).json(authenticationErrorMessage());
                     }
                 });
             }
         })
         .catch(err => {
             console.log(err);
-            res.status(500).json({error: err});
+            res.status(500).json(errorMessage());
         });
 });
 

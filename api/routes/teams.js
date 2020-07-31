@@ -1,7 +1,9 @@
 const config = require('config');
 const express = require('express');
 const mongoose = require('mongoose');
+const get_url = require('../helpers/get-url');
 const checkAuth = require('../middleware/check-auth');
+const errorMessage = require('../responses/default-error');
 
 const Team = require('../models/team');
 
@@ -23,7 +25,7 @@ router.get('/', (req, res, next) => {
                         request: {
                             type: 'GET',
                             description: 'Get team with specific id',
-                            url: `${serverConfig.URL}:${serverConfig.PORT}/teams/${doc._id}`
+                            url: `${get_url.getFull()}/teams/${doc._id}`
                         }
                     }
                 })
@@ -32,7 +34,7 @@ router.get('/', (req, res, next) => {
         })
         .catch(err => {
             console.log(err);
-            res.status(500).json({error: err});
+            res.status(500).json(errorMessage());
         });
 });
 
@@ -54,14 +56,14 @@ router.post('/', checkAuth, (req, res, next) => {
             request: {
                 type: 'GET',
                 description: 'Get all teams',
-                url: `${serverConfig.URL}:${serverConfig.PORT}/teams`
+                url: `${get_url.getFull()}/teams`
             }
         });
 
     })
     .catch(err => {
         console.log(err);
-        res.status(500).json({error: err});
+        res.status(500).json(errorMessage());
     });
 });
 
@@ -80,15 +82,19 @@ router.get('/:teamId', (req, res, next) => {
                     team: doc
                 });
             } else {
-                res.status(404).json({
-                    message: `No valid team found for id: ${teamId}`,
-                    id: teamId
-                });
+                res.statusCode = 404;
+
+                const response = errorMessage(
+                    404,
+                    `No valid team found for id: ${teamId}`
+                );
+
+                res.json(response);
             }
         })
         .catch(err => {
             console.log(err);
-            res.status(500).json({error: err});
+            res.status(500).json(errorMessage());
         });
 });
 
@@ -110,13 +116,13 @@ router.patch('/:teamId', checkAuth, (req, res, next) => {
                 request: {
                     type: 'GET',
                     description: 'Get updated team',
-                    url: `${serverConfig.URL}:${serverConfig.PORT}/teams/${teamId}`
+                    url: `${get_url.getFull()}/teams/${teamId}`
                 }
             });
         })
         .catch(err => {
             console.log(err);
-            res.status(500).json({error: err});
+            res.status(500).json(errorMessage());
         });
 });
 
@@ -134,13 +140,13 @@ router.delete('/:teamId', checkAuth, (req, res, next) => {
                 request: {
                     type: 'GET',
                     description: 'Get all teams',
-                    url: `${serverConfig.URL}:${serverConfig.PORT}/teams`
+                    url: `${get_url.getFull()}/teams`
                 }
             });
         })
         .catch(err => {
             console.log(err);
-            res.status(500).json({error: err});
+            res.status(500).json(errorMessage());
         });
 });
 

@@ -1,5 +1,6 @@
 const config = require('config');
 const jwt = require('jsonwebtoken');
+const authenticationErrorMessage = require('../responses/authentication-error');
 
 const jwtConfig = config.get('JWT');
 
@@ -10,8 +11,6 @@ module.exports = (req, res, next) => {
         req.userData = decoded;
         next();
     } catch (error) {
-        return res.status(401).json({
-            message: 'Auth failed'
-        });
+        return res.status(401).json(authenticationErrorMessage());
     }
 };

@@ -4,7 +4,8 @@
     },
     "SERVER": {
         "URL": "http://localhost",
-        "PORT": 3000
+        "PORT": 3000,
+        "VERSION": "1"
     },
     "JWT": {
         "KEY": "secret"

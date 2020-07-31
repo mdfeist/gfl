@@ -3,6 +3,9 @@ const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 
+const get_url = require('./api/helpers/get-url');
+const errorMessage = require('./api/responses/default-error');
+
 const app = express();
 const serverConfig = config.get('SERVER');
 const port = serverConfig.PORT || 3000;
@@ -40,8 +43,8 @@ const userRoutes = require('./api/routes/users');
 const teamRoutes = require('./api/routes/teams');
 
 // Handle Routes
-app.use('/users', userRoutes);
-app.use('/teams', teamRoutes);
+app.use(`/${get_url.getRelative()}/users`, userRoutes);
+app.use(`/${get_url.getRelative()}/teams`, teamRoutes);
 
 // Error Handling
 app.use((req, res, next) => {
@@ -51,12 +54,9 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-    res.status(error.status || 500);
-    res.json({
-        error: {
-            message: error.message
-        }
-    })
+    const errorCode = error.status || 500;
+    res.status(errorCode);
+    res.json(errorMessage(errorCode, error.message));
 });
 
 app.listen(port, () => console.log(`GFL app listening at ${serverConfig.URL}:${port}`));

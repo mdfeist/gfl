@@ -1,0 +1,12 @@
+{
+    "MONGO_DB": {
+        "URL": "mongodb://localhost:27017/gfl"
+    },
+    "SERVER": {
+        "URL": "http://localhost",
+        "PORT": 3000
+    },
+    "JWT": {
+        "KEY": "secret"
+    }
+}

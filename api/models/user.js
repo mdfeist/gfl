@@ -19,6 +19,9 @@ const userSchema = mongoose.Schema({
         default: 'user',
         require: true
     },
+    about: {
+        type: String
+    },
     name: {
         type: String,
         require: true
@@ -90,6 +93,9 @@ const userSchema = mongoose.Schema({
             default: false
         }
     }]
+},
+{
+    timestamps: true
 });
 
 module.exports = mongoose.model('User', userSchema);

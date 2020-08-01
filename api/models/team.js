@@ -4,6 +4,12 @@ const teamSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     name: { 
         type: String,
+        minlength: 4,
+        maxlength: 64,
+        require: true 
+    },
+    description: { 
+        type: String,
         require: true 
     },
     createdBy: {
@@ -30,6 +36,9 @@ const teamSchema = mongoose.Schema({
             default: false
         }
     }]
+},
+{
+    timestamps: true
 });
 
 module.exports = mongoose.model('Team', teamSchema);

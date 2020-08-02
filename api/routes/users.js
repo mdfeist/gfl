@@ -3,6 +3,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+
+const checkDevAuth = require('../middleware/check-dev-auth');
+
+// Response formats
 const errorMessage = require('../responses/default-error');
 const authenticationErrorMessage = require('../responses/authentication-error');
 
@@ -24,7 +28,7 @@ router.post('/signup', (req, res, next) => {
 
                 const response = errorMessage(
                     409,
-                    'Unable to create user as email already exists'
+                    'unable to create user as email already exists'
                 );
 
                 return res.json(response);
@@ -43,7 +47,8 @@ router.post('/signup', (req, res, next) => {
                         user.save()
                             .then(result => {
                                 res.status(201).json({
-                                    message: 'User created'
+                                    message: 'user created',
+                                    userId: user._id
                                 });
                             })
                             .catch(err => {
@@ -83,14 +88,33 @@ router.post('/login', (req, res, next) => {
                         });
 
                         return res.status(200).json({
-                            message: 'Auth successful',
-                            token: token
+                            message: 'authentication successful',
+                            jwt_token: token
                         });
                     } else {
                         return res.status(401).json(authenticationErrorMessage());
                     }
                 });
             }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json(errorMessage());
+        });
+});
+
+router.delete('/:userId', checkDevAuth, (req, res, next) => {
+    // Get team id
+    const userId = req.params.userId;
+
+    // Remove user based off id
+    User.deleteOne({_id: userId})
+        .exec()
+        .then(result => {
+            res.status(200).json({
+                message: `Delete user with id: ${userId}`,
+                result: result
+            });
         })
         .catch(err => {
             console.log(err);

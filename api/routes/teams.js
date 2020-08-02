@@ -9,8 +9,6 @@ const Team = require('../models/team');
 
 const router = express.Router();
 
-const serverConfig = config.get('SERVER');
-
 router.get('/', (req, res, next) => {
     Team.find()
         .select('name _id')

@@ -16,7 +16,6 @@ const User = require('../models/user');
 
 const router = express.Router();
 
-const serverConfig = config.get('SERVER');
 const jwtConfig = config.get('JWT');
 
 router.post('/signup', async (req, res, next) => {

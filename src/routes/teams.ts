@@ -113,59 +113,69 @@ router.get('/:teamId', async (req, res, next) => {
     }
 });
 
-router.patch('/:teamId', checkAuth, (req, res, next) => {
-    // Get team id
-    const teamId = req.params.teamId;
+router.patch('/:teamId', checkAuth, async (req, res, next) => {
+    try {
+        // Get team id
+        const teamId = req.params.teamId;
+        const updateOps : Record<string, string> = {};
 
-    return res.status(500).json(errorMessage());
-    /*
-    const updateOps = {};
-    for (const ops of req.body) {
-        updateOps[ops.propName] = ops.value;
-    }
+        for (const ops of req.body) {
+            updateOps[ops.propName] = ops.value;
+        }
 
-    // Update team based off id
-    Team.update({_id: teamId}, {$set: updateOps})
-        .exec()
-        .then(result => {
-            res.status(200).json({
-                message: `Team ${teamId} has been updated`,
-                request: {
-                    type: 'GET',
-                    description: 'Get updated team',
-                    url: `${getURL.getFull()}/teams/${teamId}`
-                }
-            });
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json(errorMessage());
-        });
-    */
+        // Update team based off id
+        let team = await Team.update({_id: teamId}, {$set: updateOps});
+
+        team.request = {
+            type: 'GET',
+            description: 'Get updated team.',
+            url: `${getURL.getFull()}/teams/${teamId}`
+        };
+
+        const response : Response = {
+            data: {
+                kind: "team",
+                items: [team]
+            }
+        };
+
+        return res.status(200).json(response);
+    } catch(err) {
+        console.log(err);
+        return res.status(500).json(errorMessage());
+    };
 });
 
-router.delete('/:teamId', checkAuth, (req, res, next) => {
-    // Get team id
-    const teamId = req.params.teamId;
+router.delete('/:teamId', checkAuth, async (req, res, next) => {
+    try {
+         // Get team id
+        const teamId = req.params.teamId;
 
-    // Remove team based off id
-    Team.deleteOne({_id: teamId})
-        .exec()
-        .then(result => {
-            res.status(200).json({
-                message: `Delete team with id: ${teamId}`,
-                result,
-                request: {
-                    type: 'GET',
-                    description: 'Get all teams',
-                    url: `${getURL.getFull()}/teams`
-                }
-            });
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json(errorMessage());
-        });
+        // Remove team based off id
+        const result = await Team.deleteOne({_id: teamId});
+
+        const item = {
+            message: `Delete team with id: ${teamId}`,
+            result,
+            request: {
+                type: 'GET',
+                description: 'Get all teams.',
+                url: `${getURL.getFull()}/teams`
+            }
+        };
+
+        const response : Response = {
+            data: {
+                kind: "message",
+                items: [item]
+            }
+        };
+        
+        return res.status(200).json(response);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(errorMessage());
+    };
 });
 
 export default router;

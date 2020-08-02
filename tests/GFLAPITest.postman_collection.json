@@ -25,7 +25,6 @@
 									"\r",
 									"pm.test(\"response should be okay\", function () {\r",
 									"    pm.response.to.not.be.error;\r",
-									"    pm.expect(jsonData.message).to.eql(\"user created\");\r",
 									"    pm.expect(jsonData).to.have.property(\"userId\");\r",
 									"    pm.response.to.not.have.jsonBody(\"error\");\r",
 									"});\r",
@@ -294,7 +293,6 @@
 									"\r",
 									"pm.test(\"response should be okay\", function () {\r",
 									"    pm.response.to.not.be.error;\r",
-									"    pm.expect(jsonData.message).to.eql(\"authentication successful\");\r",
 									"    pm.expect(jsonData).to.have.property(\"jwt_token\");\r",
 									"    pm.response.to.not.have.jsonBody(\"error\");\r",
 									"});\r",
@@ -817,7 +815,7 @@
 								"id": "94fcd904-f21a-46de-baf6-5423f6e99a54",
 								"exec": [
 									"const jsonData = pm.response.json();\r",
-									"postman.setEnvironmentVariable(\"number_of_teams\", jsonData.count);\r",
+									"postman.setEnvironmentVariable(\"number_of_teams\", jsonData.data.currentItemCount);\r",
 									"\r",
 									"pm.test(\"Response time is less than 200ms\", function () {\r",
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
@@ -1097,7 +1095,8 @@
 								"id": "d0787acc-9307-4d3e-97fb-cd24f4c5cbd3",
 								"exec": [
 									"const jsonData = pm.response.json();\r",
-									"postman.setEnvironmentVariable(\"teamId\", jsonData.team._id);\r",
+									"const teamId = jsonData.data.items[0]._id;\r",
+									"postman.setEnvironmentVariable(\"teamId\", teamId);\r",
 									"\r",
 									"pm.test(\"Response time is less than 200ms\", function () {\r",
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
@@ -1258,7 +1257,7 @@
 									"});\r",
 									"\r",
 									"pm.test(\"team added\", function () {\r",
-									"    pm.expect(jsonData.count).to.eql(pm.environment.get(\"number_of_teams\") + 1);\r",
+									"    pm.expect(jsonData.data.currentItemCount).to.eql(pm.environment.get(\"number_of_teams\") + 1);\r",
 									"});\r",
 									""
 								],
@@ -1398,7 +1397,8 @@
 									"});\r",
 									"\r",
 									"pm.test(\"check team name\", function () {\r",
-									"    pm.expect(jsonData.team.name).to.eql(pm.environment.get(\"teamName\"));\r",
+									"    const teamName = jsonData.data.items[0].name;\r",
+									"    pm.expect(teamName).to.eql(pm.environment.get(\"teamName\"));\r",
 									"});\r",
 									""
 								],
@@ -1684,7 +1684,8 @@
 									"});\r",
 									"\r",
 									"pm.test(\"check team name\", function () {\r",
-									"    pm.expect(jsonData.team.name).to.eql(\"newName\");\r",
+									"    const teamName = jsonData.data.items[0].name;\r",
+									"    pm.expect(teamName).to.eql(\"newName\");\r",
 									"});\r",
 									""
 								],
@@ -2106,7 +2107,7 @@
 									"});\r",
 									"\r",
 									"pm.test(\"team added\", function () {\r",
-									"    pm.expect(jsonData.count).to.eql(pm.environment.get(\"number_of_teams\"));\r",
+									"    pm.expect(jsonData.data.currentItemCount).to.eql(pm.environment.get(\"number_of_teams\"));\r",
 									"});\r",
 									""
 								],

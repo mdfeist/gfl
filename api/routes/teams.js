@@ -9,91 +9,106 @@ const Team = require('../models/team');
 
 const router = express.Router();
 
-router.get('/', (req, res, next) => {
-    Team.find()
-        .select('name _id')
-        .exec()
-        .then(docs => {
-            const response = {
-                count: docs.length,
-                teams: docs.map(doc => {
-                    return {
-                        _id: doc._id,
-                        name: doc.name,
+router.get('/', async (req, res, next) => {
+    try {
+        let teams = await Team.find().select('name _id');
+        teams = teams.map(team => {
+            return {
+                id: team._id,
+                name: team.name,
+                request: {
+                    type: 'GET',
+                    description: 'Get team info.',
+                    url: `${get_url.getFull()}/teams/${team._id}`
+                }
+            }
+        });
+
+        const response = {
+            data: {
+                currentItemCount: teams.length,
+                kind: "team",
+                fields: "name,request,id",
+                items: teams
+            }
+        };
+
+        return res.status(200).json(response);
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json(errorMessage());
+    }
+});
+
+router.post('/', checkAuth, async (req, res, next) => {
+    try {
+        // Create new team
+        const team = new Team({
+            _id: new mongoose.Types.ObjectId(),
+            name: req.body.teamName,
+            createdBy: req.userData.userId
+        });
+
+        // Save team
+        const savedTeam = await team.save();
+
+        const response = {
+            data: {
+                kind: "team",
+                fields: "name,request,id",
+                items: [
+                    {
+                        _id: savedTeam._id,
+                        name: savedTeam.name,
                         request: {
                             type: 'GET',
-                            description: 'Get team with specific id',
-                            url: `${get_url.getFull()}/teams/${doc._id}`
+                            description: 'Get team.',
+                            url: `${get_url.getFull()}/teams/${savedTeam._id}`
                         }
                     }
-                })
-            };
-            res.status(200).json(response);
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json(errorMessage());
-        });
-});
+                ]
+            }
+        };
 
-router.post('/', checkAuth, (req, res, next) => {
-    console.log(req.userData);
-    // Create new team
-    const team = new Team({
-        _id: new mongoose.Types.ObjectId(),
-        name: req.body.teamName,
-        createdBy: req.userData.userId
-    });
-
-    // Save team
-    team.save().then(result => {
         // Return team
-        res.status(201).json({
-            message: 'Team was created',
-            team: result,
-            request: {
-                type: 'GET',
-                description: 'Get all teams',
-                url: `${get_url.getFull()}/teams`
-            }
-        });
-
-    })
-    .catch(err => {
+        return res.status(201).json(response);
+    } catch(err) {
         console.log(err);
-        res.status(500).json(errorMessage());
-    });
+        return res.status(500).json(errorMessage());
+    }
 });
 
-router.get('/:teamId', (req, res, next) => {
-    // Get team id
-    const teamId = req.params.teamId;
+router.get('/:teamId', async (req, res, next) => {
+    try {
+        // Get team id
+        const teamId = req.params.teamId;
 
-    // Find team based off id
-    Team.findById(teamId)
-        .exec()
-        .then(doc => {
-            // If team found
-            if (doc) {
-                res.status(200).json({
-                    message: `Return team with id: ${teamId}`,
-                    team: doc
-                });
-            } else {
-                res.statusCode = 404;
+        const team = await Team.findById(teamId);
 
-                const response = errorMessage(
-                    404,
-                    `No valid team found for id: ${teamId}`
-                );
+        // If team not found
+        if (!team) {
+            const response = errorMessage(
+                404,
+                `No valid team found for id: ${teamId}.`
+            );
 
-                res.json(response);
+            return res.status(404).json(response);
+        }
+
+        const response = {
+            data: {
+                kind: "team",
+                items: [team]
             }
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json(errorMessage());
-        });
+        };
+
+        // Return team
+        return res.status(201).json(response);
+    } catch(err) {
+        console.log(err);
+        return res.status(500).json(errorMessage());
+    }
 });
 
 router.patch('/:teamId', checkAuth, (req, res, next) => {

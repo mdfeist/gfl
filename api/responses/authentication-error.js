@@ -2,7 +2,7 @@ module.exports = () => {
     return {
         error: {
             code: 401,
-            message: 'authentication failed'
+            message: 'Request had invalid credentials.'
         }
     };
 };

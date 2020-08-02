@@ -48,7 +48,7 @@ app.use(`/${get_url.getRelative()}/teams`, teamRoutes);
 
 // Error Handling
 app.use((req, res, next) => {
-    const error = new Error('Not Found');
+    const error = new Error('Not Found.');
     error.status = 404;
     next(error);
 });

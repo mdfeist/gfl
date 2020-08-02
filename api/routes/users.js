@@ -28,7 +28,7 @@ router.post('/signup', async (req, res, next) => {
         if (users.length >= 1) {
             const response = errorMessage(
                 409,
-                'unable to create user as email already exists'
+                'Unable to create user as email already exists.'
             );
 
             return res.status(409).json(response);
@@ -45,7 +45,7 @@ router.post('/signup', async (req, res, next) => {
         const savedUser = await user.save();
 
         return res.status(201).json({
-            message: 'user created',
+            message: 'User created.',
             userId: savedUser._id
         });
     } catch(err) {
@@ -79,7 +79,7 @@ router.post('/login', async (req, res, next) => {
             });
 
             return res.status(200).json({
-                message: 'authentication successful',
+                message: 'Authentication successful.',
                 jwt_token: token
             });
         } else {
@@ -100,7 +100,7 @@ router.delete('/:userId', checkDevAuth, async (req, res, next) => {
         const result = await User.deleteOne({_id: userId});
 
         return res.status(200).json({
-            message: `Delete user with id: ${userId}`,
+            message: `Delete user with id: ${userId}.`,
             result: result
         });
     }catch(err) {

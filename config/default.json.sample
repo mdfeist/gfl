@@ -1,13 +1,16 @@
 {
-    "MONGO_DB": {
-        "URL": "mongodb://localhost:27017/gfl"
+    "mongo_db": {
+        "url": "mongodb://localhost:27017/gfl"
     },
-    "SERVER": {
-        "URL": "http://localhost",
-        "PORT": 3000,
-        "VERSION": "1"
+    "server": {
+        "url": "http://localhost",
+        "port": 3000,
+        "version": "1"
     },
-    "JWT": {
-        "KEY": "secret"
+    "jwt": {
+        "key": "secret"
+    },
+    "developer": {
+        "key": "secret"
     }
 }

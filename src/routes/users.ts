@@ -1,29 +1,29 @@
-const config = require('config');
-const express = require('express');
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+import config from 'config';
+import express from 'express';
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-const checkDevAuth = require('../middleware/check-dev-auth');
+import {JWT} from '../config/config';
+
+import User from '../models/user';
+import checkDevAuth from '../middleware/check-dev-auth';
 
 // Response formats
-const errorMessage = require('../responses/default-error');
-const authenticationErrorMessage = require('../responses/authentication-error');
+import errorMessage from '../responses/default-error';
+import authenticationErrorMessage from '../responses/authentication-error';
 
 const saltRounds = 10;
-
-const User = require('../models/user');
+const jwtConfig = config.get<JWT>('jwt');
 
 const router = express.Router();
-
-const jwtConfig = config.get('JWT');
 
 router.post('/signup', async (req, res, next) => {
     try {
         const email = req.body.email;
         const password = req.body.password;
 
-        const users = await User.find({email: email});
+        const users = await User.find({email});
 
         if (users.length >= 1) {
             const response = errorMessage(
@@ -33,12 +33,12 @@ router.post('/signup', async (req, res, next) => {
 
             return res.status(409).json(response);
         }
-        
+
         const hash = await bcrypt.hash(password, saltRounds);
 
         const user = new User({
             _id: new mongoose.Types.ObjectId(),
-            email: email,
+            email,
             password: hash
         });
 
@@ -59,7 +59,7 @@ router.post('/login', async (req, res, next) => {
         const email = req.body.email;
         const password = req.body.password;
 
-        const users = await User.find({email: email});
+        const users = await User.find({email});
 
         if (users.length < 1) {
             return res.status(401).json(authenticationErrorMessage());
@@ -67,13 +67,13 @@ router.post('/login', async (req, res, next) => {
 
         const user = users[0];
         const match = await bcrypt.compare(password, user.password);
-    
+
         if (match) {
             const token = jwt.sign({
                 email: user.email,
                 userId: user._id
             },
-            jwtConfig.KEY,
+            jwtConfig.key,
             {
                 expiresIn: "1h"
             });
@@ -101,7 +101,7 @@ router.delete('/:userId', checkDevAuth, async (req, res, next) => {
 
         return res.status(200).json({
             message: `Delete user with id: ${userId}.`,
-            result: result
+            result
         });
     }catch(err) {
         console.log(err);
@@ -109,4 +109,4 @@ router.delete('/:userId', checkDevAuth, async (req, res, next) => {
     }
 });
 
-module.exports = router;
+export default router;

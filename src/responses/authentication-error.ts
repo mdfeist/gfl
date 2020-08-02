@@ -1,4 +1,6 @@
-module.exports = () => {
+import {Response} from './response';
+
+export default () : Response => {
     return {
         error: {
             code: 401,

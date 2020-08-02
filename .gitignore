@@ -1,7 +1,7 @@
 # Ignore files
+dist/
 config/*.json
 package-lock.json
-nodemon.json
 
 # Logs
 logs

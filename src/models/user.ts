@@ -1,17 +1,43 @@
-const mongoose = require('mongoose');
-const bnet = require('../helpers/bnet');
+import mongoose, { Schema, Document } from 'mongoose';
+import {BNET_PATTERN} from '../helpers/bnet';
 
-const userSchema = mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
-    email: { 
-        type: String, 
-        require: true, 
+export interface Connection extends Document {
+    service: string;
+    accountName: string;
+    visibleToPublic: boolean;
+    visibleToTeam: boolean;
+};
+
+export interface User extends Document {
+    email: string;
+    password: string;
+    type: string;
+    about: string;
+    name: string;
+    tag: string;
+    nickname: string;
+    bnet: string;
+    tankSR: number;
+    dpsSR: number;
+    supportSR: number;
+    playsTank: boolean;
+    playsDPS: boolean;
+    playsSupport: boolean;
+    lookingForTeam: boolean
+    connections: Connection[];
+}
+
+const UserSchema = new Schema({
+    _id: Schema.Types.ObjectId,
+    email: {
+        type: String,
+        require: true,
         unique: true,
-        match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/  
+        match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
     },
-    password: { 
-        type: String, 
-        require: true 
+    password: {
+        type: String,
+        require: true
     },
     type: {
         type: String,
@@ -36,22 +62,22 @@ const userSchema = mongoose.Schema({
     bnet: {
         type: String,
         require: true,
-        match: bnet.BNET_PATTERN
+        match: BNET_PATTERN
     },
     tankSR: {
         type: Number,
-        get: v => Math.round(v),
-        set: v => Math.round(v)
+        get: (v : number) => Math.round(v),
+        set: (v : number) => Math.round(v)
     },
     dpsSR: {
         type: Number,
-        get: v => Math.round(v),
-        set: v => Math.round(v)
+        get: (v : number) => Math.round(v),
+        set: (v : number) => Math.round(v)
     },
     supportSR: {
         type: Number,
-        get: v => Math.round(v),
-        set: v => Math.round(v)
+        get: (v : number) => Math.round(v),
+        set: (v : number) => Math.round(v)
     },
     playsTank: {
         type: Boolean,
@@ -98,4 +124,5 @@ const userSchema = mongoose.Schema({
     timestamps: true
 });
 
-module.exports = mongoose.model('User', userSchema);
+// Export the model and return your IUser interface
+export default mongoose.model<User>('User', UserSchema);

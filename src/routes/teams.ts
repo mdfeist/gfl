@@ -1,35 +1,35 @@
-const config = require('config');
-const express = require('express');
-const mongoose = require('mongoose');
-const get_url = require('../helpers/get-url');
-const checkAuth = require('../middleware/check-auth');
-const errorMessage = require('../responses/default-error');
+import express from 'express';
+import mongoose from 'mongoose';
+import * as getURL from '../helpers/get-url';
+import checkAuth from '../middleware/check-auth';
+import {Response} from '../responses/response';
+import errorMessage from '../responses/default-error';
 
-const Team = require('../models/team');
+import Team from '../models/team';
 
 const router = express.Router();
 
 router.get('/', async (req, res, next) => {
     try {
-        let teams = await Team.find().select('name _id');
-        teams = teams.map(team => {
+        const teams = await Team.find().select('name _id');
+        const teamsPartial = teams.map(team => {
             return {
                 id: team._id,
                 name: team.name,
                 request: {
                     type: 'GET',
                     description: 'Get team info.',
-                    url: `${get_url.getFull()}/teams/${team._id}`
+                    url: `${getURL.getFull()}/teams/${team._id}`
                 }
             }
         });
 
-        const response = {
+        const response : Response = {
             data: {
                 currentItemCount: teams.length,
                 kind: "team",
                 fields: "name,request,id",
-                items: teams
+                items: teamsPartial
             }
         };
 
@@ -47,13 +47,13 @@ router.post('/', checkAuth, async (req, res, next) => {
         const team = new Team({
             _id: new mongoose.Types.ObjectId(),
             name: req.body.teamName,
-            createdBy: req.userData.userId
+            createdBy: res.locals.userData.userId
         });
 
         // Save team
         const savedTeam = await team.save();
 
-        const response = {
+        const response : Response = {
             data: {
                 kind: "team",
                 fields: "name,request,id",
@@ -64,7 +64,7 @@ router.post('/', checkAuth, async (req, res, next) => {
                         request: {
                             type: 'GET',
                             description: 'Get team.',
-                            url: `${get_url.getFull()}/teams/${savedTeam._id}`
+                            url: `${getURL.getFull()}/teams/${savedTeam._id}`
                         }
                     }
                 ]
@@ -86,9 +86,11 @@ router.get('/:teamId', async (req, res, next) => {
 
         const team = await Team.findById(teamId);
 
+        let response : Response;
+
         // If team not found
         if (!team) {
-            const response = errorMessage(
+            response = errorMessage(
                 404,
                 `No valid team found for id: ${teamId}.`
             );
@@ -96,7 +98,7 @@ router.get('/:teamId', async (req, res, next) => {
             return res.status(404).json(response);
         }
 
-        const response = {
+        response = {
             data: {
                 kind: "team",
                 items: [team]
@@ -115,6 +117,8 @@ router.patch('/:teamId', checkAuth, (req, res, next) => {
     // Get team id
     const teamId = req.params.teamId;
 
+    return res.status(500).json(errorMessage());
+    /*
     const updateOps = {};
     for (const ops of req.body) {
         updateOps[ops.propName] = ops.value;
@@ -129,7 +133,7 @@ router.patch('/:teamId', checkAuth, (req, res, next) => {
                 request: {
                     type: 'GET',
                     description: 'Get updated team',
-                    url: `${get_url.getFull()}/teams/${teamId}`
+                    url: `${getURL.getFull()}/teams/${teamId}`
                 }
             });
         })
@@ -137,6 +141,7 @@ router.patch('/:teamId', checkAuth, (req, res, next) => {
             console.log(err);
             res.status(500).json(errorMessage());
         });
+    */
 });
 
 router.delete('/:teamId', checkAuth, (req, res, next) => {
@@ -149,11 +154,11 @@ router.delete('/:teamId', checkAuth, (req, res, next) => {
         .then(result => {
             res.status(200).json({
                 message: `Delete team with id: ${teamId}`,
-                result: result,
+                result,
                 request: {
                     type: 'GET',
                     description: 'Get all teams',
-                    url: `${get_url.getFull()}/teams`
+                    url: `${getURL.getFull()}/teams`
                 }
             });
         })
@@ -163,4 +168,4 @@ router.delete('/:teamId', checkAuth, (req, res, next) => {
         });
 });
 
-module.exports = router;
+export default router;

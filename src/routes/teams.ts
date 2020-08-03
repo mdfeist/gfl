@@ -133,12 +133,12 @@ router.patch('/:teamId', checkAuth, async (req, res, next) => {
         }
 
         // Update team by id
-        let team = await Team.update({_id: teamId}, {$set: updateOps});
+        let mongoResults = await Team.update({_id: teamId}, {$set: updateOps});
 
         const response : Response = {
             data: {
-                kind: "team",
-                items: [team]
+                kind: "results",
+                items: [mongoResults]
             }
         };
 
@@ -166,7 +166,7 @@ router.delete('/:teamId', checkAuth, async (req, res, next) => {
         const result = await Team.deleteOne({_id: teamId});
 
         const item = {
-            message: `Delete team with id: ${teamId}`,
+            message: `Delete called for team with id: ${teamId}`,
             result,
             request: {
                 type: 'GET',

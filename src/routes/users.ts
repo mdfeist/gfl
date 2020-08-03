@@ -146,7 +146,7 @@ router.delete('/:userId', checkAuth, async (req, res, next) => {
 
         const response : Response = {
             data: {
-                kind: "response",
+                kind: "message",
                 items: [
                     {
                         message: `Delete called for user with id: ${userId}.`,

@@ -4,7 +4,6 @@ import * as getURL from '../helpers/get-url';
 import checkAuth from '../middleware/check-auth';
 import {Response} from '../responses/response';
 import errorMessage from '../responses/default-error';
-import authenticationErrorMessage from '../responses/authentication-error';
 
 import Team from '../models/team';
 
@@ -123,7 +122,7 @@ router.patch('/:teamId', checkAuth, async (req, res, next) => {
         if (res.locals.userData.type != 'admin') {
             let teamOwner = await Team.findById(teamId);
             if (teamOwner.owner != res.locals.userData.userId) {
-                return res.status(401).json(authenticationErrorMessage());
+                return res.status(403).json(errorMessage(403, 'Permission denied.'));
             }
         }
 
@@ -133,14 +132,8 @@ router.patch('/:teamId', checkAuth, async (req, res, next) => {
             updateOps[ops.propName] = ops.value;
         }
 
-        // Update team based off id
+        // Update team by id
         let team = await Team.update({_id: teamId}, {$set: updateOps});
-
-        team.request = {
-            type: 'GET',
-            description: 'Get updated team.',
-            url: `${getURL.getFull()}/teams/${teamId}`
-        };
 
         const response : Response = {
             data: {
@@ -165,11 +158,11 @@ router.delete('/:teamId', checkAuth, async (req, res, next) => {
         if (res.locals.userData.type != 'admin') {
             let teamOwner = await Team.findById(teamId);
             if (teamOwner.owner != res.locals.userData.userId) {
-                return res.status(401).json(authenticationErrorMessage());
+                return res.status(403).json(errorMessage(403, 'Permission denied.'));
             }
         }
 
-        // Remove team based off id
+        // Remove team by id
         const result = await Team.deleteOne({_id: teamId});
 
         const item = {

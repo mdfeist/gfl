@@ -11,7 +11,7 @@ export interface Player extends Document {
 export interface Team extends Document {
     name: string;
     description: string;
-    createdBy: User['_id'];
+    owner: User['_id'];
     players: Player[];
 }
 
@@ -27,7 +27,7 @@ const TeamSchema : Schema = new Schema({
         type: String,
         require: true
     },
-    createdBy: {
+    owner: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         require: true

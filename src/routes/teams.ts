@@ -4,6 +4,7 @@ import * as getURL from '../helpers/get-url';
 import checkAuth from '../middleware/check-auth';
 import {Response} from '../responses/response';
 import errorMessage from '../responses/default-error';
+import authenticationErrorMessage from '../responses/authentication-error';
 
 import Team from '../models/team';
 
@@ -47,7 +48,7 @@ router.post('/', checkAuth, async (req, res, next) => {
         const team = new Team({
             _id: new mongoose.Types.ObjectId(),
             name: req.body.teamName,
-            createdBy: res.locals.userData.userId
+            owner: res.locals.userData.userId
         });
 
         // Save team
@@ -117,6 +118,15 @@ router.patch('/:teamId', checkAuth, async (req, res, next) => {
     try {
         // Get team id
         const teamId = req.params.teamId;
+
+        // Check if user can edit
+        if (res.locals.userData.type != 'admin') {
+            let teamOwner = await Team.findById(teamId);
+            if (teamOwner.owner != res.locals.userData.userId) {
+                return res.status(401).json(authenticationErrorMessage());
+            }
+        }
+
         const updateOps : Record<string, string> = {};
 
         for (const ops of req.body) {
@@ -150,6 +160,14 @@ router.delete('/:teamId', checkAuth, async (req, res, next) => {
     try {
          // Get team id
         const teamId = req.params.teamId;
+
+        // Check if user can delete
+        if (res.locals.userData.type != 'admin') {
+            let teamOwner = await Team.findById(teamId);
+            if (teamOwner.owner != res.locals.userData.userId) {
+                return res.status(401).json(authenticationErrorMessage());
+            }
+        }
 
         // Remove team based off id
         const result = await Team.deleteOne({_id: teamId});

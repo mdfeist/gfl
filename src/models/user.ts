@@ -20,9 +20,12 @@ export interface User extends Document {
     tankSR: number;
     dpsSR: number;
     supportSR: number;
-    playsTank: boolean;
-    playsDPS: boolean;
-    playsSupport: boolean;
+    playsMainTank: boolean;
+    playsOffTank: boolean;
+    playsProjectileDPS: boolean;
+    playsHitscanDPS: boolean;
+    playsMainSupport: boolean;
+    playsOffSupport: boolean;
     lookingForTeam: boolean
     connections: Connection[];
 }
@@ -79,15 +82,27 @@ const UserSchema = new Schema({
         get: (v : number) => Math.round(v),
         set: (v : number) => Math.round(v)
     },
-    playsTank: {
+    playsMainTank: {
         type: Boolean,
         default: false
     },
-    playsDPS: {
+    playsOffTank: {
         type: Boolean,
         default: false
     },
-    playsSupport: {
+    playsProjectileDPS: {
+        type: Boolean,
+        default: false
+    },
+    playsHitscanDPS: {
+        type: Boolean,
+        default: false
+    },
+    playsMainSupport: {
+        type: Boolean,
+        default: false
+    },
+    playsOffSupport: {
         type: Boolean,
         default: false
     },

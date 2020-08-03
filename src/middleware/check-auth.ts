@@ -17,9 +17,13 @@ export default (
         const token = req.headers.authorization.split(' ')[1];
 
         if (devConfig.key && token === devConfig.key) {
+            res.locals.userData = {
+                userId: null,
+                type: 'admin'
+            };
             return next();
         }
-        
+
         const decoded = jwt.verify(token, jwtConfig.key, null);
         res.locals.userData = decoded;
         return next();

@@ -1,5 +1,4 @@
-import fetch from 'node-fetch';
-import DOMParser from 'dom-parser';
+import ow from 'overwatch-stats-api';
 
 /*
 Regex for battle net tag:
@@ -39,47 +38,13 @@ export function getBnetTag(bnet : string) {
     return results[5].substr(1);
 };
 
-export async function getSR(bnet : string) {
+export async function getBnetStats(bnet : string, platform : string = 'pc') {
     const results = BNET_REGEX.exec(bnet);
     
     const name = results[1];
     const tag = results[5].substr(1);
 
-    const url = 'https://playoverwatch.com/en-us/career/pc/' + name + '-' + tag;
-    
-    let response = await fetch(url);
+    const stats = await ow.getBasicInfo(`${name}-${tag}`, platform);
 
-    if (response.ok) {
-        let html = await response.text();
-
-        // Convert the HTML string into a document object
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(html);
-
-        let sr_divs = doc.getElementsByClassName('competitive-rank-level');
-
-        let roles = [
-            {
-                role: 'tank',
-                sr: 0
-            },
-            {
-                role: 'damage',
-                sr: 0
-            },
-            {
-                role: 'support',
-                sr: 0
-            }
-        ];
-
-        for (let i = 0, len = sr_divs.length | 0; i < Math.min(len, 3); i = i + 1 | 0) {
-            roles[i].sr = parseInt(sr_divs[i].textContent);
-        }
-
-        return roles;
-
-    } else {
-        throw new Error("HTTP-Error: " + response.status);
-    }
+    return stats;
 };

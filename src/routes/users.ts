@@ -190,31 +190,14 @@ router.get('/:userId/sr', async (req, res, next) => {
 
         // Try to update SR
         try {
-            let roleSRList = await bnet.getSR(user.bnet);
+            let stats = await bnet.getBnetStats(user.bnet);
 
-            let updated = false;
-            for (const roleSR of roleSRList) {
-                let role = roleSR.role;
-                let sr = roleSR.sr;
-
-                if (sr) {
-                    if (role == 'tank') {
-                        user.tankSR = sr;
-                        updated = true;
-                    } else if (role == 'damage') {
-                        user.dpsSR = sr;
-                        updated = true;
-                    }else if (role == 'support') {
-                        user.supportSR = sr;
-                        updated = true;
-                    }
-                }
-            }
-
+            user.tankSR = parseInt(stats.rank.tank.sr);
+            user.dpsSR = parseInt(stats.rank.damage.sr);
+            user.supportSR = parseInt(stats.rank.support.sr);
+            
             // Save if updated
-            if (updated) {
-                user = await user.save();
-            }
+            user = await user.save();
         } catch (err) {
             console.log(`Error: Unable to update bnet for user ${userId}.`);
             console.log(err);

@@ -28,7 +28,7 @@ export interface User extends Document {
     playsHitscanDPS: boolean;
     playsMainSupport: boolean;
     playsOffSupport: boolean;
-    lookingForTeam: boolean
+    lookingForTeam: boolean;
     connections: Connection[];
 }
 

@@ -23,7 +23,7 @@
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"response should be okay\", function () {\r",
+									"pm.test(\"Response should be okay\", function () {\r",
 									"    pm.response.to.not.be.error;\r",
 									"    pm.expect(jsonData).to.have.property(\"userId\");\r",
 									"    pm.response.to.not.have.jsonBody(\"error\");\r",
@@ -39,7 +39,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"test@test.com\",\r\n    \"password\": \"mytestpassword\"\r\n}",
+							"raw": "{\r\n    \"email\": \"test@test.com\",\r\n    \"password\": \"mytestpassword\",\r\n    \"username\": \"Thanny\",\r\n    \"bnet\": \"Thanny#11667\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -156,7 +156,7 @@
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"response should return 409 conflict\", function () {\r",
+									"pm.test(\"Response should return 409 conflict\", function () {\r",
 									"    pm.response.to.be.error;\r",
 									"    pm.response.to.have.jsonBody(\"error\");\r",
 									"});\r",
@@ -277,6 +277,143 @@
 					]
 				},
 				{
+					"name": "Get user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "80492520-ba28-44b2-83f0-f461766eed01",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response should be okay\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.not.have.jsonBody(\"error\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "User email already exists",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Conflict",
+							"code": 409,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"code\": 409,\n \"message\": \"unable to create user as email already exists\"\n}"
+						},
+						{
+							"name": "User successfully created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"user created\"\n}"
+						},
+						{
+							"name": "unexpected error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "\"schema type not provided\""
+						}
+					]
+				},
+				{
 					"name": "Login",
 					"event": [
 						{
@@ -291,7 +428,7 @@
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"response should be okay\", function () {\r",
+									"pm.test(\"Response should be okay\", function () {\r",
 									"    pm.response.to.not.be.error;\r",
 									"    pm.expect(jsonData).to.have.property(\"jwt_token\");\r",
 									"    pm.response.to.not.have.jsonBody(\"error\");\r",
@@ -413,6 +550,294 @@
 					]
 				},
 				{
+					"name": "Patch user sr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d164b524-3ead-4f89-a3cd-17e855c7d815",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response should be okay\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.not.have.jsonBody(\"error\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\"propName\": \"tankSR\", \"value\": 2500},\r\n    {\"propName\": \"dpsSR\", \"value\": 2800},\r\n    {\"propName\": \"supportSR\", \"value\": 2300}\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "unexpected error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "\"schema type not provided\""
+						},
+						{
+							"name": "User email already exists",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Conflict",
+							"code": 409,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"code\": 409,\n \"message\": \"unable to create user as email already exists\"\n}"
+						},
+						{
+							"name": "User successfully created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"user created\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get user sr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "540e85b2-b0a8-4b76-b65a-8827162bbe93",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response should be okay\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.not.have.jsonBody(\"error\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check user sr\", function () {\r",
+									"    const tankSR = jsonData.data.items[0].tankSR;\r",
+									"    const dpsSR = jsonData.data.items[0].dpsSR;\r",
+									"    const supportSR = jsonData.data.items[0].supportSR;\r",
+									"    pm.expect(tankSR).to.eql(2500);\r",
+									"    pm.expect(dpsSR).to.eql(2800);\r",
+									"    pm.expect(supportSR).to.eql(2300);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}/sr/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}",
+								"sr",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "unexpected error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "\"schema type not provided\""
+						},
+						{
+							"name": "User email already exists",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Conflict",
+							"code": 409,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"code\": 409,\n \"message\": \"unable to create user as email already exists\"\n}"
+						},
+						{
+							"name": "User successfully created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"user created\"\n}"
+						}
+					]
+				},
+				{
 					"name": "Delete new user",
 					"event": [
 						{
@@ -424,7 +849,7 @@
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"response should be okay\", function () {\r",
+									"pm.test(\"Response should be okay\", function () {\r",
 									"    pm.response.to.not.be.error;\r",
 									"    pm.response.to.not.have.jsonBody(\"error\");\r",
 									"});\r",
@@ -576,7 +1001,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"test@test.com\",\r\n    \"password\": \"mytestpassword\"\r\n}",
+							"raw": "{\r\n    \"email\": \"test@test.com\",\r\n    \"password\": \"mytestpassword\",\r\n    \"username\": \"Thanny\",\r\n    \"bnet\": \"Thanny#11667\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -821,7 +1246,7 @@
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"response should be okay\", function () {\r",
+									"pm.test(\"Response should be okay\", function () {\r",
 									"    pm.response.to.not.be.error;\r",
 									"    pm.response.to.not.have.jsonBody(\"error\");\r",
 									"});\r",
@@ -957,7 +1382,7 @@
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"response should have authentication error\", function () {\r",
+									"pm.test(\"Response should have authentication error\", function () {\r",
 									"    pm.response.to.be.error;\r",
 									"    pm.response.to.have.jsonBody(\"error\");\r",
 									"});\r",
@@ -1102,7 +1527,7 @@
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"response should should be okay\", function () {\r",
+									"pm.test(\"Response should should be okay\", function () {\r",
 									"    pm.response.to.not.be.error;\r",
 									"    pm.response.to.not.have.jsonBody(\"error\");\r",
 									"});\r",
@@ -1251,12 +1676,12 @@
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"response should be okay\", function () {\r",
+									"pm.test(\"Response should be okay\", function () {\r",
 									"    pm.response.to.not.be.error;\r",
 									"    pm.response.to.not.have.jsonBody(\"error\");\r",
 									"});\r",
 									"\r",
-									"pm.test(\"team added\", function () {\r",
+									"pm.test(\"Team added\", function () {\r",
 									"    pm.expect(jsonData.data.currentItemCount).to.eql(pm.environment.get(\"number_of_teams\") + 1);\r",
 									"});\r",
 									""
@@ -1378,6 +1803,567 @@
 					]
 				},
 				{
+					"name": "Add player to team",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5165060c-0820-49b0-a193-099d840aba98",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response should should be okay\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.not.have.jsonBody(\"error\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "e8b11076-5e84-4777-ac93-f2a64523e785",
+								"exec": [
+									"pm.environment.set(\"teamName\", \"test team\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"playerId\": \"{{userId}}\",\r\n    \"playsTankForTeam\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/teams/{{teamId}}/players",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"teams",
+								"{{teamId}}",
+								"players"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "User email already exists",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Conflict",
+							"code": 409,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"code\": 409,\n \"message\": \"unable to create user as email already exists\"\n}"
+						},
+						{
+							"name": "unexpected error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "\"schema type not provided\""
+						},
+						{
+							"name": "User successfully created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"user created\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Patch user sr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1f6f4068-023b-4c78-b6a7-0804c45c22f1",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response should be okay\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.not.have.jsonBody(\"error\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\"propName\": \"tankSR\", \"value\": 2500},\r\n    {\"propName\": \"dpsSR\", \"value\": 2800},\r\n    {\"propName\": \"supportSR\", \"value\": 2300}\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "unexpected error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "\"schema type not provided\""
+						},
+						{
+							"name": "User email already exists",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Conflict",
+							"code": 409,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"code\": 409,\n \"message\": \"unable to create user as email already exists\"\n}"
+						},
+						{
+							"name": "User successfully created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"user created\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get players from team",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3f60aaef-1257-44fa-acf6-2b55271dddb3",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response should be okay\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.not.have.jsonBody(\"error\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check player sr\", function () {\r",
+									"    const tankSR = jsonData.data.items[0].tankSR;\r",
+									"    const dpsSR = jsonData.data.items[0].dpsSR;\r",
+									"    const supportSR = jsonData.data.items[0].supportSR;\r",
+									"    pm.expect(tankSR).to.eql(2500);\r",
+									"    pm.expect(dpsSR).to.eql(2800);\r",
+									"    pm.expect(supportSR).to.eql(2300);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/teams/{{teamId}}/players",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"teams",
+								"{{teamId}}",
+								"players"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "unexpected error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "\"schema type not provided\""
+						},
+						{
+							"name": "User successfully created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"user created\"\n}"
+						},
+						{
+							"name": "User email already exists",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Conflict",
+							"code": 409,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"code\": 409,\n \"message\": \"unable to create user as email already exists\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete player from team",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8805ec3d-e586-4756-b9a3-a1f72b4e33d5",
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response should be okay\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.not.have.jsonBody(\"error\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check player was deleted\", function () {\r",
+									"    const players = jsonData.data.items[0].players.length;\r",
+									"    pm.expect(players).to.eql(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/teams/{{teamId}}/players/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"teams",
+								"{{teamId}}",
+								"players",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "User successfully created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"message\": \"user created\"\n}"
+						},
+						{
+							"name": "User email already exists",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Conflict",
+							"code": 409,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"code\": 409,\n \"message\": \"unable to create user as email already exists\"\n}"
+						},
+						{
+							"name": "unexpected error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/signup",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"signup"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "\"schema type not provided\""
+						}
+					]
+				},
+				{
 					"name": "Get team",
 					"event": [
 						{
@@ -1391,12 +2377,12 @@
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"response should be okay\", function () {\r",
+									"pm.test(\"Response should be okay\", function () {\r",
 									"    pm.response.to.not.be.error;\r",
 									"    pm.response.to.not.have.jsonBody(\"error\");\r",
 									"});\r",
 									"\r",
-									"pm.test(\"check team name\", function () {\r",
+									"pm.test(\"Check team name\", function () {\r",
 									"    const teamName = jsonData.data.items[0].name;\r",
 									"    pm.expect(teamName).to.eql(pm.environment.get(\"teamName\"));\r",
 									"});\r",
@@ -1539,7 +2525,7 @@
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"response should be okay\", function () {\r",
+									"pm.test(\"Response should be okay\", function () {\r",
 									"    pm.response.to.not.be.error;\r",
 									"    pm.response.to.not.have.jsonBody(\"error\");\r",
 									"});"
@@ -1827,7 +2813,7 @@
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"response should should be okay\", function () {\r",
+									"pm.test(\"Response should should be okay\", function () {\r",
 									"    pm.response.to.be.error;\r",
 									"    pm.response.to.have.jsonBody(\"error\");\r",
 									"});\r",
@@ -1961,7 +2947,7 @@
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"response should should be okay\", function () {\r",
+									"pm.test(\"Response should should be okay\", function () {\r",
 									"    pm.response.to.not.be.error;\r",
 									"    pm.response.to.not.have.jsonBody(\"error\");\r",
 									"});\r",
@@ -2101,12 +3087,12 @@
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"response should be okay\", function () {\r",
+									"pm.test(\"Response should be okay\", function () {\r",
 									"    pm.response.to.not.be.error;\r",
 									"    pm.response.to.not.have.jsonBody(\"error\");\r",
 									"});\r",
 									"\r",
-									"pm.test(\"team added\", function () {\r",
+									"pm.test(\"Team added\", function () {\r",
 									"    pm.expect(jsonData.data.currentItemCount).to.eql(pm.environment.get(\"number_of_teams\"));\r",
 									"});\r",
 									""
@@ -2239,7 +3225,7 @@
 									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
 									"});\r",
 									"\r",
-									"pm.test(\"response should be okay\", function () {\r",
+									"pm.test(\"Response should be okay\", function () {\r",
 									"    pm.response.to.not.be.error;\r",
 									"    pm.response.to.not.have.jsonBody(\"error\");\r",
 									"});\r",

@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { User } from './user';
 
-export interface Player extends Document {
-    player: User['_id'];
+export interface Player {
+    playerId: User['_id'];
     playsTankForTeam: boolean;
     playsDPSForTeam: boolean;
     playsSupportForTeam: boolean;
@@ -33,7 +33,7 @@ const TeamSchema : Schema = new Schema({
         require: true
     },
     players: [{
-        player: {
+        playerId: {
             type: Schema.Types.ObjectId,
             ref: 'User',
             require: true

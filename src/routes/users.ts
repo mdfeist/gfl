@@ -212,6 +212,75 @@ router.get('/:userId', async (req, res, next) => {
     };
 });
 
+router.patch('/:userId', checkAuth, async (req, res, next) => {
+    try {
+        // Get user id
+        const userId = req.params.userId;
+
+        // Check if user can edit
+        if (res.locals.userData.type != 'admin') {
+            if (userId != res.locals.userData.userId) {
+                return res.status(403).json(errorMessage(403, 'Permission denied.'));
+            }
+        }
+
+        const updateOps : Record<string, string> = {};
+
+        for (const ops of req.body) {
+            updateOps[ops.propName] = ops.value;
+        }
+
+        // Update user by id
+        let user = await User.updateOne({_id: userId}, {$set: updateOps});
+
+        const response : Response = {
+            data: {
+                kind: "user",
+                items: [user]
+            }
+        };
+
+        return res.status(200).json(response);
+    } catch(err) {
+        console.log(err);
+        return res.status(500).json(errorMessage());
+    };
+});
+
+router.delete('/:userId', checkAuth, async (req, res, next) => {
+    try {
+        // Get team id
+        const userId = req.params.userId;
+
+        // Check if user can edit
+        if (res.locals.userData.type != 'admin') {
+            if (userId != res.locals.userData.userId) {
+                return res.status(403).json(errorMessage(403, 'Permission denied.'));
+            }
+        }
+
+        // Remove user by id
+        const result = await User.deleteOne({_id: userId});  
+
+        const response : Response = {
+            data: {
+                kind: "message",
+                items: [
+                    {
+                        message: `Delete called for user with id: ${userId}.`,
+                        result: result
+                    }
+                ]
+            }
+        };
+
+        return res.status(200).json(response);
+    }catch(err) {
+        console.log(err);
+        res.status(500).json(errorMessage());
+    }
+});
+
 router.get('/:userId/sr', async (req, res, next) => {
     try {
         // Get user id
@@ -268,75 +337,6 @@ router.get('/:userId/sr', async (req, res, next) => {
         console.log(err);
         return res.status(500).json(errorMessage());
     };
-});
-
-router.patch('/:userId', checkAuth, async (req, res, next) => {
-    try {
-        // Get user id
-        const userId = req.params.userId;
-
-        // Check if user can edit
-        if (res.locals.userData.type != 'admin') {
-            if (userId != res.locals.userData.userId) {
-                return res.status(403).json(errorMessage(403, 'Permission denied.'));
-            }
-        }
-
-        const updateOps : Record<string, string> = {};
-
-        for (const ops of req.body) {
-            updateOps[ops.propName] = ops.value;
-        }
-
-        // Update user by id
-        let user = await User.update({_id: userId}, {$set: updateOps});
-
-        const response : Response = {
-            data: {
-                kind: "user",
-                items: [user]
-            }
-        };
-
-        return res.status(200).json(response);
-    } catch(err) {
-        console.log(err);
-        return res.status(500).json(errorMessage());
-    };
-});
-
-router.delete('/:userId', checkAuth, async (req, res, next) => {
-    try {
-        // Get team id
-        const userId = req.params.userId;
-
-        // Check if user can edit
-        if (res.locals.userData.type != 'admin') {
-            if (userId != res.locals.userData.userId) {
-                return res.status(403).json(errorMessage(403, 'Permission denied.'));
-            }
-        }
-
-        // Remove user by id
-        const result = await User.deleteOne({_id: userId});  
-
-        const response : Response = {
-            data: {
-                kind: "message",
-                items: [
-                    {
-                        message: `Delete called for user with id: ${userId}.`,
-                        result: result
-                    }
-                ]
-            }
-        };
-
-        return res.status(200).json(response);
-    }catch(err) {
-        console.log(err);
-        res.status(500).json(errorMessage());
-    }
 });
 
 export default router;

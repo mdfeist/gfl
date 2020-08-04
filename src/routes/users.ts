@@ -189,18 +189,22 @@ router.get('/:userId/sr', async (req, res, next) => {
         }
 
         // Try to update SR
-        try {
-            let stats = await bnet.getBnetStats(user.bnet);
-
-            user.tankSR = parseInt(stats.rank.tank.sr);
-            user.dpsSR = parseInt(stats.rank.damage.sr);
-            user.supportSR = parseInt(stats.rank.support.sr);
-            
-            // Save if updated
-            user = await user.save();
-        } catch (err) {
-            console.log(`Error: Unable to update bnet for user ${userId}.`);
-            console.log(err);
+        let updateSR = req.query.update;
+        if (updateSR) {
+            try {
+                let stats = await bnet.getBnetStats(user.bnet);
+    
+                user.tankSR = parseInt(stats.rank.tank.sr);
+                user.dpsSR = parseInt(stats.rank.damage.sr);
+                user.supportSR = parseInt(stats.rank.support.sr);
+                
+                // Save if updated
+                user = await user.save();
+            } catch (err) {
+                console.log(`Error: Unable to update bnet for user ${userId}.`);
+                console.log(err);
+                return res.status(500).json(errorMessage(500, err));
+            }
         }
 
         const usersPartial = {

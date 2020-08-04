@@ -70,16 +70,51 @@ router.post('/signup', async (req, res, next) => {
             return res.status(409).json(response);
         }
 
+        // Check valid username
+        let username = req.body.username;
+        if (!username || username.length < 4) {
+            const response = errorMessage(
+                409,
+                'Unable to create user as username is not acceptable.'
+            );
+
+            return res.status(409).json(response);
+        }
+
+        // Get unique tag
+        let randomTag = '00000';
+        let userTagExists = true;
+        while (userTagExists) {
+            randomTag = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
+            userTagExists = await User.exists({username: username, tag: randomTag});
+        } 
+
+        // Check valid bnet
+        let bnetTag = req.body.bnet;
+
+        if (!bnetTag || !bnet.checkValidBnet(bnetTag)) {
+            const response = errorMessage(
+                409,
+                'Unable to create user as battle net tag is not acceptable.'
+            );
+
+            return res.status(409).json(response);
+        }
+
+        // Hash password
         const hash = await bcrypt.hash(password, saltRounds);
 
+        // Create user
         const user = new User({
             _id: new mongoose.Types.ObjectId(),
             email: email,
             password: hash,
-            name: req.body.name,
-            bnet: req.body.bnet
+            username: username,
+            tag: randomTag,
+            bnet: bnetTag
         });
 
+        // Save user
         const savedUser = await user.save();
 
         return res.status(201).json({
@@ -143,7 +178,7 @@ router.get('/:userId', async (req, res, next) => {
 
         const usersPartial = {
             id: user._id,
-            name: user.name,
+            username: user.username,
             tag: user.tag,
             nickname: user.nickname,
             bnet: user.bnet,
@@ -209,7 +244,7 @@ router.get('/:userId/sr', async (req, res, next) => {
 
         const usersPartial = {
             id: user._id,
-            name: user.name,
+            username: user.username,
             tag: user.tag,
             bnet: user.bnet,
             tankSR: user.tankSR,

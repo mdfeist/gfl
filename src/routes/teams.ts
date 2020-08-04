@@ -11,6 +11,7 @@ const router = express.Router();
 
 router.get('/', async (req, res, next) => {
     try {
+        // TODO: Mongoose paginate
         const teams = await Team.find().select('name _id');
         const teamsPartial = teams.map(team => {
             return {

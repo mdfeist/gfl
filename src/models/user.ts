@@ -15,7 +15,7 @@ export interface User extends Document {
     password: string;
     type: string;
     about: string;
-    name: string;
+    username: string;
     tag: string;
     nickname: string;
     bnet: string;
@@ -54,7 +54,7 @@ const UserSchema = new Schema({
         type: String,
         default: null
     },
-    name: {
+    username: {
         type: String,
         require: true
     },

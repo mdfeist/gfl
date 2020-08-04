@@ -1,5 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import {BNET_PATTERN} from '../helpers/bnet';
+import { BNET_PATTERN } from '../helpers/bnet';
+
+export const EMAIL_PATTERN = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
 export interface Connection extends Document {
     service: string;
@@ -36,7 +38,7 @@ const UserSchema = new Schema({
         type: String,
         require: true,
         unique: true,
-        match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
+        match: EMAIL_PATTERN
     },
     password: {
         type: String,
@@ -49,7 +51,8 @@ const UserSchema = new Schema({
         require: true
     },
     about: {
-        type: String
+        type: String,
+        default: null
     },
     name: {
         type: String,
@@ -60,7 +63,8 @@ const UserSchema = new Schema({
         require: true
     },
     nickname: {
-        type: String
+        type: String,
+        default: null
     },
     bnet: {
         type: String,
@@ -70,17 +74,20 @@ const UserSchema = new Schema({
     tankSR: {
         type: Number,
         get: (v : number) => Math.round(v),
-        set: (v : number) => Math.round(v)
+        set: (v : number) => Math.round(v),
+        default: 0
     },
     dpsSR: {
         type: Number,
         get: (v : number) => Math.round(v),
-        set: (v : number) => Math.round(v)
+        set: (v : number) => Math.round(v),
+        default: 0
     },
     supportSR: {
         type: Number,
         get: (v : number) => Math.round(v),
-        set: (v : number) => Math.round(v)
+        set: (v : number) => Math.round(v),
+        default: 0
     },
     playsMainTank: {
         type: Boolean,

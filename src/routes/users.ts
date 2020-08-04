@@ -4,19 +4,22 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+
+import User, { EMAIL_PATTERN } from '../models/user';
+import * as getURL from '../helpers/get-url';
+import * as bnet from '../helpers/bnet';
+import checkAuth from '../middleware/check-auth';
 import {JWT} from '../config/config';
 
-import User from '../models/user';
-
-import checkAuth from '../middleware/check-auth';
-
 // Response formats
-import {Response} from '../responses/response';
+import { Response } from '../responses/response';
 import errorMessage from '../responses/default-error';
 import authenticationErrorMessage from '../responses/authentication-error';
 
 const saltRounds = 10;
 const jwtConfig = config.get<JWT>('jwt');
+
+const EMAIL_REGEX = new RegExp(EMAIL_PATTERN);
 
 const router = express.Router();
 
@@ -25,7 +28,28 @@ router.post('/signup', async (req, res, next) => {
         const email = req.body.email;
         const password = req.body.password;
 
-        const users = await User.find({email});
+        // Check if email is given
+        if (!email) {
+            const response = errorMessage(
+                409,
+                'Unable to create user as no email was given.'
+            );
+
+            return res.status(409).json(response);
+        }
+
+        // Check if email is valid
+        if (!EMAIL_REGEX.test(email)) {
+            const response = errorMessage(
+                409,
+                'Unable to create user as invalid email was given.'
+            );
+
+            return res.status(409).json(response);
+        }
+
+        // Check if user email exists
+        let users = await User.find({email});
 
         if (users.length >= 1) {
             const response = errorMessage(
@@ -36,12 +60,24 @@ router.post('/signup', async (req, res, next) => {
             return res.status(409).json(response);
         }
 
+        // Check if password is acceptable
+        if (!password || password.length < 6) {
+            const response = errorMessage(
+                409,
+                'Unable to create user as password is not acceptable.'
+            );
+
+            return res.status(409).json(response);
+        }
+
         const hash = await bcrypt.hash(password, saltRounds);
 
         const user = new User({
             _id: new mongoose.Types.ObjectId(),
-            email,
-            password: hash
+            email: email,
+            password: hash,
+            name: req.body.name,
+            bnet: req.body.bnet
         });
 
         const savedUser = await user.save();
@@ -92,6 +128,124 @@ router.post('/login', async (req, res, next) => {
         console.log(err);
         return res.status(500).json(errorMessage());
     }
+});
+
+router.get('/:userId', async (req, res, next) => {
+    try {
+        // Get user id
+        const userId = req.params.userId;
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json(errorMessage(404, 'Unable to find user.'));
+        }
+
+        const usersPartial = {
+            id: user._id,
+            name: user.name,
+            tag: user.tag,
+            nickname: user.nickname,
+            bnet: user.bnet,
+            tankSR: user.tankSR,
+            dpsSR: user.dpsSR,
+            supportSR: user.supportSR,
+            playsMainTank: user.playsMainTank,
+            playsOffTank: user.playsOffTank,
+            playsProjectileDPS: user.playsProjectileDPS,
+            playsHitscanDPS: user.playsHitscanDPS,
+            playsMainSupport: user.playsMainSupport,
+            playsOffSupport: user.playsOffSupport,
+            lookingForTeam: user.lookingForTeam
+        };
+
+        const fields = Object.keys(usersPartial).toString();
+
+        const response : Response = {
+            data: {
+                currentItemCount: 1,
+                kind: "user",
+                fields: fields,
+                items: [usersPartial]
+            }
+        };
+
+        return res.status(200).json(response);
+    } catch(err) {
+        console.log(err);
+        return res.status(500).json(errorMessage());
+    };
+});
+
+router.get('/:userId/sr', async (req, res, next) => {
+    try {
+        // Get user id
+        const userId = req.params.userId;
+
+        let user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json(errorMessage(404, 'Unable to find user.'));
+        }
+
+        // Try to update SR
+        try {
+            let roleSRList = await bnet.getSR(user.bnet);
+
+            let updated = false;
+            for (const roleSR of roleSRList) {
+                let role = roleSR.role;
+                let sr = roleSR.sr;
+
+                if (sr) {
+                    if (role == 'tank') {
+                        user.tankSR = sr;
+                        updated = true;
+                    } else if (role == 'damage') {
+                        user.dpsSR = sr;
+                        updated = true;
+                    }else if (role == 'support') {
+                        user.supportSR = sr;
+                        updated = true;
+                    }
+                }
+            }
+
+            // Save if updated
+            if (updated) {
+                user = await user.save();
+            }
+        } catch (err) {
+            console.log(`Error: Unable to update bnet for user ${userId}.`);
+            console.log(err);
+        }
+
+        const usersPartial = {
+            id: user._id,
+            name: user.name,
+            tag: user.tag,
+            bnet: user.bnet,
+            tankSR: user.tankSR,
+            dpsSR: user.dpsSR,
+            supportSR: user.supportSR
+        };
+
+        const fields = Object.keys(usersPartial).toString();
+
+        const response : Response = {
+            data: {
+                currentItemCount: 1,
+                kind: "user",
+                fields: fields,
+                items: [usersPartial]
+            }
+        };
+
+        return res.status(200).json(response);
+    } catch(err) {
+        console.log(err);
+        return res.status(500).json(errorMessage());
+    };
 });
 
 router.patch('/:userId', checkAuth, async (req, res, next) => {

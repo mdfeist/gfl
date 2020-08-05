@@ -1,6 +1,6 @@
-const newman = require('newman');
+const newman = require("newman");
 
 newman.run({
-  collection: require('./GFLAPITest.postman_collection.json'),
-  reporters: 'cli',
+  collection: require("./GFLAPITest.postman_collection.json"),
+  reporters: "cli",
 });

@@ -1,25 +1,24 @@
 export interface JWT {
-    key:        string;
+  key: string;
 }
 
 export interface Developer {
-    key:        string;
+  key: string;
 }
 
 export interface Server {
-    url:        string;
-    port:       number;
-    version:    string;
+  url: string;
+  port: number;
+  version: string;
 }
 
 export interface MongoDB {
-    url:        string;
+  url: string;
 }
 
-
 export interface Config {
-    mongo_db: MongoDB;
-    jwt: JWT;
-    developer: Developer;
-    server: Server;
+  mongo_db: MongoDB;
+  jwt: JWT;
+  developer: Developer;
+  server: Server;
 }

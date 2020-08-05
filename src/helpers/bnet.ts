@@ -1,4 +1,4 @@
-import ow from 'overwatch-stats-api';
+import ow from "overwatch-stats-api";
 
 /*
 Regex for battle net tag:
@@ -24,27 +24,27 @@ Explanation:
 export const BNET_PATTERN = /(^([A-zÀ-ú][A-zÀ-ú0-9]{2,11})|(^([а-яёА-ЯЁÀ-ú][а-яёА-ЯЁ0-9À-ú]{2,11})))(#[0-9]{4,})$/;
 const BNET_REGEX = new RegExp(BNET_PATTERN);
 
-export function checkValidBnet(bnet : string) {
+export function checkValidBnet(bnet: string) {
     return BNET_REGEX.test(bnet);
-};
+}
 
-export function getBnetName(bnet : string) {
+export function getBnetName(bnet: string) {
     const results = BNET_REGEX.exec(bnet);
     return results[1];
-};
+}
 
-export function getBnetTag(bnet : string) {
+export function getBnetTag(bnet: string) {
     const results = BNET_REGEX.exec(bnet);
     return results[5].substr(1);
-};
+}
 
-export async function getBnetStats(bnet : string, platform : string = 'pc') {
+export async function getBnetStats(bnet: string, platform: string = "pc") {
     const results = BNET_REGEX.exec(bnet);
-    
+
     const name = results[1];
     const tag = results[5].substr(1);
 
     const stats = await ow.getBasicInfo(`${name}-${tag}`, platform);
 
     return stats;
-};
+}

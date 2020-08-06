@@ -1,18 +1,18 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { User } from "./user";
+import { IUser } from "./user";
 
-export interface Player {
-  playerId: User["_id"];
+export interface IPlayer {
+  playerId: IUser["_id"];
   playsTankForTeam: boolean;
   playsDPSForTeam: boolean;
   playsSupportForTeam: boolean;
 }
 
-export interface Team extends Document {
+export interface ITeam extends Document {
   name: string;
   description: string;
-  owner: User["_id"];
-  players: Player[];
+  owner: IUser["_id"];
+  players: IPlayer[];
 }
 
 const TeamSchema: Schema = new Schema(
@@ -61,4 +61,4 @@ const TeamSchema: Schema = new Schema(
 );
 
 // Export the model and return your ITeam interface
-export default mongoose.model<Team>("Team", TeamSchema);
+export default mongoose.model<ITeam>("Team", TeamSchema);

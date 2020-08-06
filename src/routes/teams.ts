@@ -6,7 +6,7 @@ import { Response } from "../responses/response";
 import errorMessage from "../responses/default-error";
 
 import User from "../models/user";
-import Team, { Player } from "../models/team";
+import Team, { IPlayer } from "../models/team";
 
 const router = express.Router();
 
@@ -274,7 +274,7 @@ router.post("/:teamId/players", checkAuth, async (req, res, next) => {
       }
     }
 
-    const player: Player = {
+    const player: IPlayer = {
       playerId: playerId,
       playsTankForTeam: req.body.playsTankForTeam,
       playsDPSForTeam: req.body.playsDPSForTeam,

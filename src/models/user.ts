@@ -3,14 +3,14 @@ import { BNET_PATTERN } from "../helpers/bnet";
 
 export const EMAIL_PATTERN = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 
-export interface Connection extends Document {
+export interface IConnection extends Document {
   service: string;
   accountName: string;
   visibleToPublic: boolean;
   visibleToTeam: boolean;
 }
 
-export interface User extends Document {
+export interface IUser extends Document {
   email: string;
   password: string;
   type: string;
@@ -29,7 +29,7 @@ export interface User extends Document {
   playsMainSupport: boolean;
   playsOffSupport: boolean;
   lookingForTeam: boolean;
-  connections: Connection[];
+  connections: IConnection[];
 }
 
 const UserSchema = new Schema(
@@ -147,4 +147,4 @@ const UserSchema = new Schema(
 );
 
 // Export the model and return your IUser interface
-export default mongoose.model<User>("User", UserSchema);
+export default mongoose.model<IUser>("User", UserSchema);

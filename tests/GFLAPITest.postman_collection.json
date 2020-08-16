@@ -3359,7 +3359,7 @@
 		{
 			"id": "baseUrl",
 			"key": "baseUrl",
-			"value": "http://localhost:3000/v1/api",
+			"value": "http://localhost:4000/v1/api",
 			"type": "string"
 		}
 	],

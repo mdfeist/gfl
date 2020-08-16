@@ -13,24 +13,57 @@ const router = express.Router();
 router.get("/", async (req, res, next) => {
   try {
     // TODO: Mongoose paginate
-    const teams = await Team.find().select("name _id");
-    const teamsPartial = teams.map((team) => {
-      return {
-        id: team._id,
-        name: team.name,
-        request: {
-          type: "GET",
-          description: "Get team info.",
-          url: `${getURL.getFull()}/teams/${team._id}`,
-        },
-      };
-    });
+    const teams = await Team.find();
+    const teamsPartial = await Promise.all(
+      teams.map(async (team) => {
+        let user = await User.findOne({ _id: team.owner });
+
+        const players = await Promise.all(
+          team.players.map(async (player) => {
+            let user = await User.findOne({ _id: player.playerId });
+
+            return {
+              id: user._id,
+              username: user.username,
+              tag: user.tag,
+              bnet: user.bnet,
+              tankSR: user.tankSR,
+              dpsSR: user.dpsSR,
+              supportSR: user.supportSR,
+              request: {
+                type: "GET",
+                description: "Get user info.",
+                url: `${getURL.getFull()}/users/${user._id}`,
+              },
+            };
+          })
+        );
+
+        return {
+          id: team._id,
+          name: team.name,
+          description: team.description,
+          ownerId: team.owner,
+          ownerName: user.username,
+          ownerTag: user.tag,
+          players: players,
+          request: {
+            type: "GET",
+            description: "Get team info.",
+            url: `${getURL.getFull()}/teams/${team._id}`,
+          },
+        };
+      })
+    );
+
+    const fields =
+      teamsPartial.length > 0 ? Object.keys(teamsPartial[0]).toString() : "";
 
     const response: Response = {
       data: {
         currentItemCount: teams.length,
         kind: "team",
-        fields: "name,request,id",
+        fields: fields,
         items: teamsPartial,
       },
     };
